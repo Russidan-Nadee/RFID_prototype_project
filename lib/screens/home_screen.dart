@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../database.dart'; // import database helper
+import '../sevice/database_sevice.dart'; // import database helper
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);

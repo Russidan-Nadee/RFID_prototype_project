@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../database.dart';
+import '../sevice/database_sevice.dart';
 
 class SearchAssetsScreen extends StatefulWidget {
   const SearchAssetsScreen({Key? key}) : super(key: key);
@@ -147,6 +147,15 @@ class _SearchAssetsScreenState extends State<SearchAssetsScreen> {
                             const Icon(Icons.verified, size: 20),
                             const SizedBox(width: 8),
                             Text('Status: ${asset['status'] ?? ''}', style: const TextStyle(fontSize: 16)),
+                          ],
+                        ),
+                        // เพิ่มบรรทัดนี้เพื่อแสดงวันที่
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            const Icon(Icons.calendar_today, size: 20),
+                            const SizedBox(width: 8),
+                            Text('Date: ${asset['date'] ?? ''}', style: const TextStyle(fontSize: 16)),
                           ],
                         ),
                       ],

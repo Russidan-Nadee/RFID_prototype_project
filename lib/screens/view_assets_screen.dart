@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../database.dart';
+import '../sevice/database_sevice.dart';
 
 class ViewAssetsScreen extends StatefulWidget {
   const ViewAssetsScreen({Key? key}) : super(key: key);
