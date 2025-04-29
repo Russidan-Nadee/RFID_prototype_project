@@ -35,14 +35,14 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 2; // เริ่มต้นที่ Home (Index 2)
+  int _currentIndex = 0; // เริ่มต้นที่ Home (Index 0)
 
   final List<Widget> _screens = [
-    const ViewAssetsScreen(),
-    const SearchAssetsScreen(),
-    const HomeScreen(),
-    const ScanRfidScreen(),
-    const ExportScreen(),
+    const HomeScreen(), // Home
+    const SearchAssetsScreen(), // Search
+    const ScanRfidScreen(), // Scan
+    const ViewAssetsScreen(), // Status
+    const ExportScreen(), // Export
   ];
 
   @override
@@ -62,7 +62,7 @@ class _MainScreenState extends State<MainScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         actions: [
-          if (_currentIndex == 2) // เฉพาะหน้า Home เท่านั้น
+          if (_currentIndex == 0) // เฉพาะหน้า Home เท่านั้น
             IconButton(
               icon: const Icon(Icons.settings, color: Color(0xFF007BFF)),
               onPressed: () {
@@ -95,12 +95,15 @@ class _MainScreenState extends State<MainScreen> {
           });
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.table_chart), label: 'Status'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
           BottomNavigationBarItem(
             icon: Icon(Icons.qr_code_scanner),
             label: 'Scan',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.table_chart),
+            label: 'Status',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.import_export),
@@ -114,15 +117,15 @@ class _MainScreenState extends State<MainScreen> {
   String _getTitle() {
     switch (_currentIndex) {
       case 0:
-        return 'View Status';
+        return 'FRID Project';
       case 1:
         return 'Search Assets';
       case 2:
-        return 'Home';
+        return 'Scan Assets';
       case 3:
-        return 'Scan RFID';
+        return 'View Status';
       case 4:
-        return 'Export';
+        return 'Export CSV File';
       default:
         return '';
     }
