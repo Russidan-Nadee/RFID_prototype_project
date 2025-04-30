@@ -31,12 +31,13 @@ class _SearchAssetsScreenState extends State<SearchAssetsScreen> {
   void _filterAssets(String query) {
     setState(() {
       final q = query.toLowerCase();
-      filteredAssets = assets.where((asset) {
-        return (asset['id']?.toLowerCase().contains(q) ?? false) ||
-               (asset['category']?.toLowerCase().contains(q) ?? false) ||
-               (asset['status']?.toLowerCase().contains(q) ?? false) ||
-               (asset['brand']?.toLowerCase().contains(q) ?? false);
-      }).toList();
+      filteredAssets =
+          assets.where((asset) {
+            return (asset['id']?.toLowerCase().contains(q) ?? false) ||
+                (asset['category']?.toLowerCase().contains(q) ?? false) ||
+                (asset['status']?.toLowerCase().contains(q) ?? false) ||
+                (asset['brand']?.toLowerCase().contains(q) ?? false);
+          }).toList();
     });
   }
 
@@ -84,85 +85,113 @@ class _SearchAssetsScreenState extends State<SearchAssetsScreen> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: ListView.builder(
-                itemCount: filteredAssets.length,
-                itemBuilder: (context, index) {
-                  final asset = filteredAssets[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 2,
-                    child: ExpansionTile(
-                      leading: Icon(
-                        _getCategoryIcon(asset['category']),
-                        size: 28,
-                        color: Colors.blueGrey,
-                      ),
-                      title: Row(
-                        children: [
-                          Text(
-                            asset['id'] ?? '',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+              child:
+                  filteredAssets.isEmpty
+                      ? const Center(
+                        child: Text(
+                          'No data found',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                      : ListView.builder(
+                        itemCount: filteredAssets.length,
+                        itemBuilder: (context, index) {
+                          final asset = filteredAssets[index];
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 4),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            capitalize(asset['category']),
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                        ],
+                            elevation: 2,
+                            child: ExpansionTile(
+                              leading: Icon(
+                                _getCategoryIcon(asset['category']),
+                                size: 28,
+                                color: Colors.blueGrey,
+                              ),
+                              title: Row(
+                                children: [
+                                  Text(
+                                    asset['id'] ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    capitalize(asset['category']),
+                                    style: const TextStyle(fontSize: 18),
+                                  ),
+                                ],
+                              ),
+                              childrenPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(Icons.qr_code, size: 20),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'UID: ${asset['uid'] ?? ''}',
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.business, size: 20),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Brand: ${asset['brand'] ?? ''}',
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.apartment, size: 20),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Department: ${asset['department'] ?? ''}',
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.verified, size: 20),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Status: ${asset['status'] ?? ''}',
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.calendar_today, size: 20),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Date: ${asset['date'] ?? ''}',
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
-                      childrenPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.qr_code, size: 20),
-                            const SizedBox(width: 8),
-                            Text('UID: ${asset['uid'] ?? ''}', style: const TextStyle(fontSize: 16)),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            const Icon(Icons.business, size: 20),
-                            const SizedBox(width: 8),
-                            Text('Brand: ${asset['brand'] ?? ''}', style: const TextStyle(fontSize: 16)),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            const Icon(Icons.apartment, size: 20),
-                            const SizedBox(width: 8),
-                            Text('Department: ${asset['department'] ?? ''}', style: const TextStyle(fontSize: 16)),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            const Icon(Icons.verified, size: 20),
-                            const SizedBox(width: 8),
-                            Text('Status: ${asset['status'] ?? ''}', style: const TextStyle(fontSize: 16)),
-                          ],
-                        ),
-                        // เพิ่มบรรทัดนี้เพื่อแสดงวันที่
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            const Icon(Icons.calendar_today, size: 20),
-                            const SizedBox(width: 8),
-                            Text('Date: ${asset['date'] ?? ''}', style: const TextStyle(fontSize: 16)),
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
             ),
           ],
         ),

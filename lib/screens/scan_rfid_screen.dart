@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:rfid_project/foundornot/found_screen.dart';
+import 'package:rfid_project/foundornot/not_found_screen.dart';
 import 'package:rfid_project/sevice/database_sevice.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class ScanRfidScreen extends StatefulWidget {
   const ScanRfidScreen({Key? key}) : super(key: key);
@@ -11,146 +12,93 @@ class ScanRfidScreen extends StatefulWidget {
 
 class _ScanRfidScreenState extends State<ScanRfidScreen> {
   final TextEditingController _uidController = TextEditingController();
-  final DatabaseHelper dbHelper = DatabaseHelper();
+  String? errorMessage;
 
-  List<String> departments = ['HR', 'IT', 'Marketing', 'Sales']; // Dropdown ของ Department
-  String selectedDepartment = 'HR'; // ค่าของ department
-  Map<String, dynamic>? assetData; // สำหรับเก็บข้อมูลที่ดึงจากฐานข้อมูล
+  // ฟังก์ชันค้นหาข้อมูลในฐานข้อมูล
+  Future<void> _searchAsset() async {
+    String uid = _uidController.text;
+
+    // 1. ตรวจสอบว่า UID มีความยาว 10 ตัว
+    if (uid.length == 10) {
+      var dbHelper = DatabaseHelper();
+      var asset = await dbHelper.getAssetByUid(uid); // ค้นหาข้อมูลจาก UID
+
+      // 2. ตรวจสอบการจับคู่ UID กับข้อมูลในฐานข้อมูล
+      if (asset != null && asset['uid'] == uid) {
+        // ถ้าพบข้อมูลตรงกับ UID
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FoundScreen(uid: uid), // ส่งค่า uid ไปที่ FoundScreen
+          ),
+        );
+      } else {
+        // ถ้าข้อมูลไม่ตรงกัน
+        setState(() {
+          errorMessage = 'ไม่พบข้อมูลสำหรับ UID: $uid.'; // ข้อความเมื่อไม่พบข้อมูล
+        });
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NotFoundScreen(uid: uid), // ไปที่หน้าข้อมูลไม่พบ
+          ),
+        );
+      }
+    } else {
+      // หาก UID ไม่ครบ 10 ตัว
+      setState(() {
+        errorMessage = 'Error: UID length must be 10 characters.'; // หาก UID ไม่ใช่ 10 ตัว
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Simulated RFID Scan'),
-        backgroundColor: Colors.blue,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ช่องกรอก UID
-            TextField(
-              controller: _uidController,
-              decoration: InputDecoration(
-                labelText: 'Enter UID or Asset ID',
-                prefixIcon: const Icon(Icons.qr_code),
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // ช่องกรอก UID
+              TextField(
+                controller: _uidController,
+                decoration: InputDecoration(
+                  labelText: 'กรอก UID หรือ Asset ID',
+                  prefixIcon: const Icon(Icons.qr_code),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 20,
+                    horizontal: 16,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _scanAsset, // กดเพื่อสแกนและตรวจสอบ UID
-              child: const Text('Scan Asset'),
-            ),
-            const SizedBox(height: 20),
-            // ถ้าไม่พบ UID ให้แสดง Dropdown และปุ่ม Create New Asset
-            if (assetData == null) ...[
-              const Text('Department:'),
-              DropdownButton<String>(
-                value: selectedDepartment,
-                items: departments.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedDepartment = newValue!;
-                  });
-                },
-              ),
+              const SizedBox(height: 16),
+              // แสดงข้อความหากไม่มีการกรอก UID หรือ UID ไม่ถูกต้อง
+              if (errorMessage != null)
+                Text(errorMessage!, style: TextStyle(color: Colors.red)),
+              const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: _createNewAsset, // เมื่อกดปุ่มนี้จะสร้างสินทรัพย์ใหม่
-                child: const Text('Create New Asset'),
+                onPressed: _searchAsset, // เรียกใช้ฟังก์ชันค้นหา
+                child: const Text('Scan RFID'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
               ),
             ],
-            // แสดงรายละเอียดเมื่อพบข้อมูลในฐานข้อมูล
-            if (assetData != null) ...[
-              const Text('Asset Details:'),
-              Text('ID: ${assetData!['id']}'),
-              Text('Category: ${assetData!['category']}'),
-              Text('Brand: ${assetData!['brand']}'),
-              Text('Status: ${assetData!['status']}'),
-              Text('Date: ${assetData!['date']}'),
-              ElevatedButton(
-                onPressed: _checkInAsset, // เมื่อกดจะทำการ Check In
-                child: const Text('Check In'),
-              ),
-            ],
-          ],
+          ),
         ),
       ),
-    );
-  }
-
-  // ฟังก์ชันสแกนและค้นหาในฐานข้อมูล
-  void _scanAsset() async {
-    String uid = _uidController.text.trim();
-    if (uid.isNotEmpty) {
-      var data = await dbHelper.getAssetByUid(uid);
-      if (data != null) {
-        setState(() {
-          assetData = data; // แสดงข้อมูลเมื่อพบ UID
-        });
-      } else {
-        setState(() {
-          assetData = null; // หากไม่พบ ให้แสดง form สำหรับสร้าง asset ใหม่
-        });
-      }
-    }
-  }
-
-  // ฟังก์ชันสำหรับการสร้าง Asset ใหม่
-  void _createNewAsset() {
-    DateTime now = DateTime.now();
-    String currentDate = now.toIso8601String();  // เวลาปัจจุบัน
-
-    // สร้างข้อมูลใหม่
-    dbHelper.insertNewAsset(
-      {
-        'id': 'NewID-${DateTime.now().millisecondsSinceEpoch}', // ตัวอย่างการสร้าง ID ใหม่
-        'category': 'Uncategorized',
-        'brand': 'Unknown',
-        'department': selectedDepartment,  // กรอกจาก Dropdown
-        'status': 'Available',  // สถานะเริ่มต้นเป็น Available
-        'date': currentDate,  // วันที่และเวลาปัจจุบัน
-      },
-    );
-
-    showToast("New asset created!");
-  }
-
-  // ฟังก์ชันสำหรับการอัปเดตสถานะเป็น Checked In
-  void _checkInAsset() async {
-    if (assetData != null) {
-      DateTime now = DateTime.now();
-      String currentDate = now.toIso8601String(); // ใช้เวลาปัจจุบันจากเครื่อง
-
-      // อัปเดตสถานะจาก Available -> Checked In
-      await dbHelper.updateAssetStatus(
-        assetData!['id'], 
-        'Checked In', 
-        currentDate,  // กำหนดวันที่เป็นเวลาปัจจุบัน
-      );
-
-      showToast("Asset checked in!");
-    }
-  }
-
-  // Toast function for showing messages
-  void showToast(String message) {
-    Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 1,
     );
   }
 }
