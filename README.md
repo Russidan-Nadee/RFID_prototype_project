@@ -13,17 +13,7 @@ This project is a prototype for RFID-based asset management. It integrates vario
 - **RFID Technology**: Used for asset identification and tracking.
 
 ## Project Structure
-RFID_prototype_project/ 
-├── android/ # Android-specific files 
-├── ios/ # iOS-specific files 
-├── web/ # Web-specific files 
-├── lib/ # Main Dart code files 
-├── assets/ # Images and other static assets 
-├── test/ # Unit and Widget tests 
-├── windows/ # Windows-specific files 
-├── macos/ # macOS-specific files 
-├── linux/ # Linux-specific files 
-└── .gitignore # Git ignore file
+RFID_prototype_project/ ├── android/ # Android-specific files ├── ios/ # iOS-specific files ├── web/ # Web-specific files ├── lib/ # Main Dart code files ├── assets/ # Images and other static assets ├── test/ # Unit and Widget tests ├── windows/ # Windows-specific files ├── macos/ # macOS-specific files ├── linux/ # Linux-specific files └── .gitignore # Git ignore file
 
 
 ## Installation
