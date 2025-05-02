@@ -38,6 +38,7 @@ dependencies:
   path: ^1.9.1
   shared_preferences: ^2.5.3
   intl: ^0.20.2
+  provider: ^6.1.5
   
   # Chart dependencies for data visualization
   fl_chart: ^0.63.0
