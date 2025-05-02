@@ -1,16 +1,58 @@
-# test
+# RFID Prototype Project
+This project is a prototype for RFID-based asset management. It integrates various components to track and manage assets in a streamlined manner using RFID technology. The project supports mobile platforms (Android and iOS), desktop (Windows, Linux, macOS), and web platforms.
 
-A new Flutter project.
+## Technologies Used
 
-## Getting Started
+- **Flutter**: Used for cross-platform app development, supporting Android, iOS, and web platforms.
+- **Dart**: The primary programming language used for app development.
+- **SQLite**: Used for local data storage and management.
+- **RFID Technology**: Used for asset identification and tracking.
 
-This project is a starting point for a Flutter application.
+## Project Structure
 
-A few resources to get you started if this is your first Flutter project:
+```
+RFID_prototype_project/
+├── android/            # Android-specific files
+├── ios/                # iOS-specific files
+├── web/                # Web-specific files
+├── lib/                # Main Dart code files
+├── assets/             # Images and other static assets
+├── test/               # Unit and Widget tests
+├── windows/            # Windows-specific files
+├── macos/              # macOS-specific files
+├── linux/              # Linux-specific files
+└── .gitignore          # Git ignore file
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Installation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clone this repository to your local machine:
+   ```bash
+   git clone https://github.com/Russidan-Nadee/RFID_prototype_project.git
+   ```
+
+2. Install dependencies:
+   ```bash
+   flutter pub get
+   ```
+
+3. For mobile platforms, you can run the app on an emulator or a physical device:
+   ```bash
+   flutter run
+   ```
+
+4. For web, you can use the following command to serve the app:
+   ```bash
+   flutter run -d chrome
+   ```
+
+## Features
+
+- Asset tracking using RFID technology
+- Cross-platform support (Android, iOS, Web)
+- Local data storage with SQLite
+- Real-time asset location updates
+
+## Contribution
+
+Feel free to fork this project and create pull requests. Contributions are welcome!
