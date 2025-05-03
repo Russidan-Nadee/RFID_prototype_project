@@ -18,7 +18,7 @@ class _ViewAssetsScreenState extends State<ViewAssetsScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AssetBloc>().loadAssets();
     });
   }

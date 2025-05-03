@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/constants/navigation_constants.dart';
 import '../../../../core/navigation/navigation_service.dart';
 import '../../../common_widgets/layouts/app_bottom_navigation.dart';
 import '../blocs/navigation_bloc.dart';

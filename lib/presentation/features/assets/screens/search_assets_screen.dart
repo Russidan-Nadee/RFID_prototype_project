@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../domain/entities/asset.dart';
 import '../../../common_widgets/inputs/search_field.dart';
 import '../../../common_widgets/layouts/app_bottom_navigation.dart';
 import '../../../common_widgets/layouts/screen_container.dart';
@@ -21,7 +20,7 @@ class _SearchAssetsScreenState extends State<SearchAssetsScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AssetBloc>().loadAssets();
     });
   }

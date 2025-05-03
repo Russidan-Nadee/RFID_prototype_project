@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../domain/entities/asset.dart';
 import '../../../../domain/usecases/get_assets_usecase.dart';
 
 enum DashboardStatus { initial, loading, loaded, error }

@@ -36,7 +36,7 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => FoundScreen());
       case notFound:
         return MaterialPageRoute(builder: (_) => NotFoundScreen());
-      case settings:
+      case 'settings':
         return MaterialPageRoute(builder: (_) => SettingsScreen());
       default:
         return MaterialPageRoute(builder: (_) => HomeScreen());
