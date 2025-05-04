@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../repositories/asset_repository.dart';
-import '../../core/navigation/app_routes.dart';
+import 'package:rfid_project/core/navigation/app_routes.dart';
+import 'package:rfid_project/domain/repositories/asset_repository.dart';
 
 class SearchAssetUseCase {
   final AssetRepository repository;

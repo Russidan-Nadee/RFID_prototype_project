@@ -8,22 +8,54 @@ class AssetRepositoryImpl implements AssetRepository {
 
   AssetRepositoryImpl(this._databaseHelper);
 
+  // จัดการสินทรัพย์
   @override
   Future<List<Asset>> getAssets() async {
     final assetsMaps = await _databaseHelper.getAssets();
     return assetsMaps.map((map) => AssetModel.fromMap(map)).toList();
   }
 
+  // เปลี่ยนชื่อจาก getAssetByUid เป็น findAssetByUid ให้ตรงกับที่เรียกใช้ในโค้ด
   @override
-  Future<Asset?> getAssetByUid(String uid) async {
+  Future<Asset?> findAssetByUid(String uid) async {
+    // เปลี่ยนชื่อจาก getAssetByUid เป็น findAssetByUid ให้ตรงกับที่เรียกใช้
     final assetMap = await _databaseHelper.getAssetByUid(uid);
     if (assetMap == null) return null;
     return AssetModel.fromMap(assetMap);
   }
 
+  // เพิ่มเมธอด getAssetByUid เพื่อให้ตรงกับอินเตอร์เฟส
+  @override
+  Future<Asset?> getAssetByUid(String uid) async {
+    return findAssetByUid(uid); // เรียกใช้เมธอด findAssetByUid ที่มีอยู่แล้ว
+  }
+
   @override
   Future<bool> updateAssetStatus(String uid, String status) async {
     return await _databaseHelper.updateStatus(uid, status);
+  }
+
+  // เพิ่มเมธอด updateAsset เพื่อให้ตรงกับอินเตอร์เฟส
+  @override
+  Future<Asset?> updateAsset(Asset asset) async {
+    // แปลง Asset เป็น AssetModel
+    final assetModel = asset as AssetModel;
+
+    // อัปเดตสถานะในฐานข้อมูล
+    bool success = await _databaseHelper.updateAsset(
+      assetModel.uid,
+      assetModel.id,
+      assetModel.category,
+      assetModel.brand,
+      assetModel.department,
+      assetModel.status,
+      assetModel.date,
+    );
+
+    if (success) {
+      return asset;
+    }
+    return null;
   }
 
   @override
@@ -47,5 +79,47 @@ class AssetRepositoryImpl implements AssetRepository {
   @override
   Future<void> deleteAllAssets() async {
     await _databaseHelper.deleteAllAssets();
+  }
+
+  // จัดการหมวดหมู่
+  @override
+  Future<List<String>> getCategories() async {
+    return await _databaseHelper.getCategories();
+  }
+
+  @override
+  Future<void> addCategory(String name) async {
+    await _databaseHelper.addCategory(name);
+  }
+
+  @override
+  Future<void> updateCategory(String oldName, String newName) async {
+    await _databaseHelper.updateCategory(oldName, newName);
+  }
+
+  @override
+  Future<void> deleteCategory(String name) async {
+    await _databaseHelper.deleteCategory(name);
+  }
+
+  // จัดการแผนก
+  @override
+  Future<List<String>> getDepartments() async {
+    return await _databaseHelper.getDepartments();
+  }
+
+  @override
+  Future<void> addDepartment(String name) async {
+    await _databaseHelper.addDepartment(name);
+  }
+
+  @override
+  Future<void> updateDepartment(String oldName, String newName) async {
+    await _databaseHelper.updateDepartment(oldName, newName);
+  }
+
+  @override
+  Future<void> deleteDepartment(String name) async {
+    await _databaseHelper.deleteDepartment(name);
   }
 }

@@ -1,5 +1,5 @@
-import '../entities/asset.dart';
-import '../repositories/asset_repository.dart';
+import 'package:rfid_project/domain/entities/asset.dart';
+import 'package:rfid_project/domain/repositories/asset_repository.dart';
 
 class GetAssetsUseCase {
   final AssetRepository repository;

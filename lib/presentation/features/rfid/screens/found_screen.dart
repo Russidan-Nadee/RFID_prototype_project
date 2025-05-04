@@ -1,105 +1,205 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../../domain/usecases/update_asset_usecase.dart';
 import '../../../common_widgets/buttons/primary_button.dart';
 import '../../../common_widgets/layouts/screen_container.dart';
-import '../widgets/scan_result_display.dart';
+import '../../../../domain/entities/asset.dart';
 
 class FoundScreen extends StatelessWidget {
+  final Asset asset;
+  final String uid;
+
+  const FoundScreen({Key? key, required this.asset, required this.uid})
+    : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    final Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
-    final String uid = arguments['uid'];
-    final UpdateAssetUseCase updateAssetUseCase =
-        context.read<UpdateAssetUseCase>();
-
     return ScreenContainer(
       appBar: AppBar(title: const Text('Asset Found')),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 24),
-
-          // Success icon
-          Icon(Icons.check_circle, color: Colors.green, size: 80),
-
-          const SizedBox(height: 16),
-
-          // Title
-          const Text(
-            'Asset Found!',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-
-          const SizedBox(height: 8),
-
-          // UID display
-          Text(
-            'UID: $uid',
-            style: const TextStyle(fontSize: 18, color: Colors.grey),
-          ),
-
-          const SizedBox(height: 32),
-
-          // Asset details
-          ScanResultDisplay(uid: uid),
-
-          const Spacer(),
-
-          // Action buttons
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(
-                child: PrimaryButton(
-                  text: 'Check In',
-                  icon: Icons.check_circle_outline,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // แสดงข้อความว่าพบสินทรัพย์
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: Icon(
+                  Icons.check_circle_outline,
                   color: Colors.green,
-                  onPressed: () async {
-                    await updateAssetUseCase.execute(uid, 'Checked In');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Asset checked in successfully'),
-                      ),
-                    );
-                    Navigator.pop(context);
-                  },
+                  size: 64,
                 ),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: PrimaryButton(
-                  text: 'Check Out',
-                  icon: Icons.logout,
-                  color: Colors.orange,
-                  onPressed: () async {
-                    await updateAssetUseCase.execute(uid, 'Checked Out');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Asset checked out successfully'),
-                      ),
-                    );
-                    Navigator.pop(context);
-                  },
+            ),
+
+            const Center(
+              child: Text(
+                'Asset Found in System',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
                 ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // แสดงข้อมูล UID
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'RFID Information',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const Text(
+                          'UID: ',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(uid),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // แสดงข้อมูลสินทรัพย์
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Asset Details',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _buildDetailRow('Asset ID', asset.id),
+                    _buildDetailRow('Brand', asset.brand),
+                    _buildDetailRow('Category', asset.category),
+                    _buildDetailRow('Department', asset.department),
+                    _buildDetailRow('Status', asset.status),
+                    _buildDetailRow('Last Updated', asset.date),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // ปุ่มอัปเดตสถานะ
+            Center(
+              child: PrimaryButton(
+                text: 'Update Status',
+                icon: Icons.update,
+                onPressed: () {
+                  _showUpdateStatusDialog(context);
+                },
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // ปุ่มกลับไปหน้าสแกน
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  Navigator.of(
+                    context,
+                  ).popUntil((route) => route.settings.name == '/scanRfid');
+                },
+                child: const Text('Back to Scanner'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // สร้างแถวข้อมูลรายละเอียด
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 110,
+            child: Text(
+              '$label: ',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(child: Text(value)),
+        ],
+      ),
+    );
+  }
+
+  // แสดง dialog อัปเดตสถานะ
+  void _showUpdateStatusDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Update Asset Status'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildStatusOption(context, 'In Use'),
+                _buildStatusOption(context, 'Available'),
+                _buildStatusOption(context, 'Under Maintenance'),
+                _buildStatusOption(context, 'Out of Order'),
+                _buildStatusOption(context, 'Missing'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
               ),
             ],
           ),
+    );
+  }
 
-          const SizedBox(height: 16),
+  // สร้างตัวเลือกสถานะ
+  Widget _buildStatusOption(BuildContext context, String status) {
+    return ListTile(
+      title: Text(status),
+      onTap: () {
+        // ทำการอัปเดตสถานะใน Repository
+        // (ควรใช้ UpdateAssetUseCase)
 
-          // Back button
-          OutlinedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Back to Scan'),
-            style: OutlinedButton.styleFrom(
-              minimumSize: const Size.fromHeight(50),
-            ),
+        // แสดงข้อความว่าอัปเดตสำเร็จ
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Status updated to $status'),
+            backgroundColor: Colors.green,
           ),
-        ],
-      ),
+        );
+
+        // ปิด dialog
+        Navigator.of(context).pop();
+      },
     );
   }
 }

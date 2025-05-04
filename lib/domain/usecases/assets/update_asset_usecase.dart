@@ -1,4 +1,4 @@
-import '../repositories/asset_repository.dart';
+import 'package:rfid_project/domain/repositories/asset_repository.dart';
 
 class UpdateAssetUseCase {
   final AssetRepository repository;

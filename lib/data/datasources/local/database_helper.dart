@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:rfid_project/core/constants/app_constants.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:flutter/services.dart';
@@ -27,7 +28,47 @@ class DatabaseHelper {
       await File(path).writeAsBytes(bytes, flush: true);
     }
 
-    return await openDatabase(path);
+    var dbClient = await openDatabase(path);
+
+    // ตรวจสอบว่ามีตาราง categories หรือยัง
+    var tables = await dbClient.rawQuery(
+      'SELECT name FROM sqlite_master WHERE type="table" AND name="categories"',
+    );
+    if (tables.isEmpty) {
+      // สร้างตาราง categories
+      await dbClient.execute('''
+        CREATE TABLE categories(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT UNIQUE
+        )
+      ''');
+
+      // เพิ่มค่าเริ่มต้นจาก AppConstants
+      for (String category in AppConstants.defaultAssetCategories) {
+        await dbClient.insert('categories', {'name': category});
+      }
+    }
+
+    // ตรวจสอบว่ามีตาราง departments หรือยัง
+    tables = await dbClient.rawQuery(
+      'SELECT name FROM sqlite_master WHERE type="table" AND name="departments"',
+    );
+    if (tables.isEmpty) {
+      // สร้างตาราง departments
+      await dbClient.execute('''
+        CREATE TABLE departments(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT UNIQUE
+        )
+      ''');
+
+      // เพิ่มค่าเริ่มต้นจาก AppConstants
+      for (String department in AppConstants.defaultDepartments) {
+        await dbClient.insert('departments', {'name': department});
+      }
+    }
+
+    return dbClient;
   }
 
   Future<List<Map<String, dynamic>>> getAssets() async {
@@ -119,6 +160,158 @@ class DatabaseHelper {
       return count > 0;
     } catch (e) {
       throw Exception('Error updating status: $e');
+    }
+  }
+
+  // เพิ่มเมธอดใหม่สำหรับอัปเดตข้อมูลสินทรัพย์ทั้งหมด
+  Future<bool> updateAsset(
+    String uid,
+    String id,
+    String category,
+    String brand,
+    String department,
+    String status,
+    String date,
+  ) async {
+    try {
+      var dbClient = await db;
+
+      // ทำให้ uid และ id เป็นตัวพิมพ์ใหญ่ทั้งหมดให้สอดคล้องกับการเพิ่มข้อมูลใหม่
+      uid = uid.toUpperCase();
+      id = id.toUpperCase();
+
+      Map<String, dynamic> updatedAsset = {
+        'id': id,
+        'category': category,
+        'brand': brand,
+        'department': department,
+        'status': status,
+        'date': date,
+      };
+
+      int count = await dbClient.update(
+        'assets',
+        updatedAsset,
+        where: 'uid = ?',
+        whereArgs: [uid],
+      );
+
+      return count > 0;
+    } catch (e) {
+      print('Error updating asset: $e');
+      return false;
+    }
+  }
+
+  // ฟังก์ชันสำหรับจัดการหมวดหมู่
+  Future<List<String>> getCategories() async {
+    try {
+      var dbClient = await db;
+      List<Map<String, dynamic>> results = await dbClient.query(
+        'categories',
+        orderBy: 'name',
+      );
+      return results.map((map) => map['name'] as String).toList();
+    } catch (e) {
+      throw Exception('Error fetching categories: $e');
+    }
+  }
+
+  Future<void> addCategory(String name) async {
+    try {
+      var dbClient = await db;
+      await dbClient.insert('categories', {'name': name});
+    } catch (e) {
+      throw Exception('Error adding category: $e');
+    }
+  }
+
+  Future<void> updateCategory(String oldName, String newName) async {
+    try {
+      var dbClient = await db;
+      await dbClient.update(
+        'categories',
+        {'name': newName},
+        where: 'name = ?',
+        whereArgs: [oldName],
+      );
+
+      // อัปเดตรายการสินทรัพย์ที่ใช้หมวดหมู่นี้
+      await dbClient.update(
+        'assets',
+        {'category': newName},
+        where: 'category = ?',
+        whereArgs: [oldName],
+      );
+    } catch (e) {
+      throw Exception('Error updating category: $e');
+    }
+  }
+
+  Future<void> deleteCategory(String name) async {
+    try {
+      var dbClient = await db;
+      await dbClient.delete('categories', where: 'name = ?', whereArgs: [name]);
+    } catch (e) {
+      throw Exception('Error deleting category: $e');
+    }
+  }
+
+  // ฟังก์ชันสำหรับจัดการแผนก
+  Future<List<String>> getDepartments() async {
+    try {
+      var dbClient = await db;
+      List<Map<String, dynamic>> results = await dbClient.query(
+        'departments',
+        orderBy: 'name',
+      );
+      return results.map((map) => map['name'] as String).toList();
+    } catch (e) {
+      throw Exception('Error fetching departments: $e');
+    }
+  }
+
+  Future<void> addDepartment(String name) async {
+    try {
+      var dbClient = await db;
+      await dbClient.insert('departments', {'name': name});
+    } catch (e) {
+      throw Exception('Error adding department: $e');
+    }
+  }
+
+  Future<void> updateDepartment(String oldName, String newName) async {
+    try {
+      var dbClient = await db;
+      await dbClient.update(
+        'departments',
+        {'name': newName},
+        where: 'name = ?',
+        whereArgs: [oldName],
+      );
+
+      // อัปเดตรายการสินทรัพย์ที่ใช้แผนกนี้
+      await dbClient.update(
+        'assets',
+        {'department': newName},
+        where: 'department = ?',
+        whereArgs: [oldName],
+      );
+    } catch (e) {
+      throw Exception('Error updating department: $e');
+    }
+  }
+
+  Future<void> deleteDepartment(String name) async {
+    try {
+      var dbClient = await db;
+      await dbClient.delete(
+        'departments',
+        where: 'name = ?',
+        whereArgs: [name],
+      );
+    } catch (e) {
+      throw Exception('Error deleting department: $e');
     }
   }
 }
