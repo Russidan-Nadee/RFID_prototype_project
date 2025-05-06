@@ -50,7 +50,7 @@ class AssetTableRow {
     final isChecked = asset.status == 'Checked In';
 
     return DataRow(
-      color: MaterialStateProperty.all(
+      color: WidgetStateProperty.all(
         index.isEven ? Colors.grey.shade100 : Colors.white,
       ),
       cells: [
