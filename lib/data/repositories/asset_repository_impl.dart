@@ -122,4 +122,16 @@ class AssetRepositoryImpl implements AssetRepository {
   Future<void> deleteDepartment(String name) async {
     await _databaseHelper.deleteDepartment(name);
   }
+
+  // เพิ่มเมธอด getRandomUid เพื่อสุ่ม UID จากฐานข้อมูล
+  @override
+  Future<String?> getRandomUid() async {
+    try {
+      // เรียกใช้เมธอด getRandomUid ที่อยู่ใน DatabaseHelper แทน getRandomAsset
+      return await _databaseHelper.getRandomUid();
+    } catch (e) {
+      print('Error in getRandomUid: ${e.toString()}');
+      return null;
+    }
+  }
 }

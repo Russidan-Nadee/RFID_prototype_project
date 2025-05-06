@@ -74,9 +74,7 @@ class AppRoutes {
         // ตรวจสอบว่ามีการส่ง args มาหรือไม่
         if (args is Map<String, dynamic>) {
           // ส่งข้อมูล asset และ uid ไปยัง FoundScreen ที่ไม่มีอนิเมชั่น
-          return _createRouteWithoutAnimation(
-            FoundScreen(asset: args['asset'], uid: args['uid']),
-          );
+          return _createRouteWithoutAnimation(FoundScreen());
         }
         // กรณีไม่มี args หรือ args ไม่ถูกต้อง ให้กลับไปหน้าสแกน
         return _createRouteWithoutAnimation(ScanRfidScreen());
@@ -84,7 +82,7 @@ class AppRoutes {
         // ถ้าเป็นหน้าไม่พบสินทรัพย์ สร้างหน้า NotFoundScreen พร้อมส่ง uid
         if (args is Map<String, dynamic>) {
           // ส่งข้อมูล uid ไปยัง NotFoundScreen ที่ไม่มีอนิเมชั่น
-          return _createRouteWithoutAnimation(NotFoundScreen(uid: args['uid']));
+          return _createRouteWithoutAnimation(NotFoundScreen());
         }
         // กรณีไม่มี args หรือ args ไม่ถูกต้อง ให้กลับไปหน้าสแกน
         return _createRouteWithoutAnimation(ScanRfidScreen());

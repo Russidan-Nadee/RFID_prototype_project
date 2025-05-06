@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rfid_project/domain/repositories/asset_repository.dart';
+import 'package:rfid_project/domain/usecases/rfid/get_random_uid_usecase.dart';
 import 'core/navigation/app_routes.dart';
 import 'core/theme/app_theme.dart';
 import 'core/di/dependency_injection.dart';
@@ -29,6 +31,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         // ลงทะเบียน Provider สำหรับทุก Bloc
+        Provider<AssetRepository>(
+          create: (_) => DependencyInjection.getIt.get<AssetRepository>(),
+        ),
         ChangeNotifierProvider(create: (_) => NavigationBloc()),
         ChangeNotifierProvider(
           create:
@@ -50,8 +55,10 @@ class MyApp extends StatelessWidget {
           create:
               (_) => RfidScanBloc(
                 DependencyInjection.getIt.get<ScanRfidUseCase>(),
+                DependencyInjection.getIt.get<GetRandomUidUseCase>(),
               ),
         ),
+
         ChangeNotifierProvider(
           create: (_) => SettingsBloc(DependencyInjection.getIt.get()),
         ),

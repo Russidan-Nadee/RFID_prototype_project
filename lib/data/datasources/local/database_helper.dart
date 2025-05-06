@@ -314,4 +314,21 @@ class DatabaseHelper {
       throw Exception('Error deleting department: $e');
     }
   }
+
+  Future<String?> getRandomUid() async {
+    try {
+      var dbClient = await db; // ใช้ getter db ที่มีอยู่แล้ว
+      List<Map<String, dynamic>> results = await dbClient.rawQuery(
+        'SELECT uid FROM assets ORDER BY RANDOM() LIMIT 1',
+      );
+
+      if (results.isNotEmpty && results.first.containsKey('uid')) {
+        return results.first['uid'] as String?;
+      }
+      return null;
+    } catch (e) {
+      print('Error getting random UID: $e');
+      return null;
+    }
+  }
 }

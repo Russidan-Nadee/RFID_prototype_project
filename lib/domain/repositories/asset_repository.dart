@@ -10,6 +10,8 @@ abstract class AssetRepository {
   Future<void> deleteAllAssets();
   Future<Asset?> findAssetByUid(String uid);
   Future<Asset?> updateAsset(Asset asset);
+  // เพิ่มเมธอดสำหรับการสุ่ม UID
+  Future<String?> getRandomUid();
 
   // จัดการหมวดหมู่
   Future<List<String>> getCategories();

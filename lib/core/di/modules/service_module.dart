@@ -4,10 +4,12 @@
 import 'package:get_it/get_it.dart';
 import 'package:rfid_project/core/services/rfid_service.dart';
 import 'package:rfid_project/data/datasources/local/mock_rfid_service.dart';
+import 'package:rfid_project/domain/repositories/asset_repository.dart';
 import 'package:rfid_project/domain/usecases/assets/create_asset_usecase.dart';
 import 'package:rfid_project/domain/usecases/assets/get_assets_usecase.dart';
 import 'package:rfid_project/domain/usecases/assets/search_asset_usecase.dart';
 import 'package:rfid_project/domain/usecases/assets/update_asset_usecase.dart';
+import 'package:rfid_project/domain/usecases/rfid/get_random_uid_usecase.dart';
 import 'package:rfid_project/domain/usecases/rfid/scan_rfid_usecase.dart';
 
 // คลาสโมดูลบริการ - ใช้ลงทะเบียนการทำงานระดับสูง (UseCase) ในแอป
@@ -39,5 +41,9 @@ class ServiceModule {
 
     // ลงทะเบียน UseCase สำหรับสร้างสินทรัพย์ใหม่
     _getIt.registerLazySingleton(() => CreateAssetUseCase(_getIt()));
+
+    _getIt.registerFactory(
+      () => GetRandomUidUseCase(_getIt<AssetRepository>()),
+    );
   }
 }
