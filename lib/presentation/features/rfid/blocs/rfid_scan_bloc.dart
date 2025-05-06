@@ -62,7 +62,7 @@ class RfidScanBloc extends ChangeNotifier {
         // นำทางไปยังหน้าแสดงข้อมูลสินทรัพย์
         Navigator.pushNamed(
           context,
-          '/foundPage',
+          '/foundPage', // ควรเป็น '/found' ตามที่กำหนดใน app_routes.dart
           arguments: {'asset': result['asset'], 'uid': _lastScannedUid},
         );
       } else {
@@ -70,7 +70,7 @@ class RfidScanBloc extends ChangeNotifier {
         // นำทางไปยังหน้าไม่พบสินทรัพย์
         Navigator.pushNamed(
           context,
-          '/notFoundPage',
+          '/notFoundPage', // ควรเป็น '/notFound' ตามที่กำหนดใน app_routes.dart
           arguments: {'uid': _lastScannedUid},
         );
       }
@@ -105,15 +105,14 @@ class RfidScanBloc extends ChangeNotifier {
         // แก้ไขการอ้างอิงเส้นทางการนำทาง
         Navigator.pushNamed(
           context,
-          '/foundScreen', // แทน '/foundPage'
+          '/foundScreen', // แทน '/foundPage' - ไม่สอดคล้องกับเมธอด scanRfid และ app_routes.dart
           arguments: {'asset': result['asset'], 'uid': _lastScannedUid},
         );
 
-        // และ
-
+        // และ - ปัญหาคือมีการนำทางไปทั้งสองหน้าโดยไม่มีเงื่อนไข
         Navigator.pushNamed(
           context,
-          '/notFoundScreen', // แทน '/notFoundPage'
+          '/notFoundScreen', // แทน '/notFoundPage' - ไม่สอดคล้องกับเมธอด scanRfid และ app_routes.dart
           arguments: {'uid': _lastScannedUid},
         );
       }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../blocs/rfid_scan_bloc.dart';
-import '../../../../data/datasources/local/mock_rfid_service.dart';
 import '../widgets/mock_mode_selector.dart';
 
 class DeveloperOptionsScreen extends StatelessWidget {

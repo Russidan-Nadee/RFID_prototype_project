@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 // คลาสนี้เป็น interface สำหรับบริการ RFID ทั้งแบบจริงและแบบจำลอง
 abstract class RfidService {
   // วิธีตรวจสอบว่าอุปกรณ์ RFID พร้อมใช้งานหรือไม่

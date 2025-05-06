@@ -56,6 +56,7 @@ class SettingsBloc extends ChangeNotifier {
     }
 
     notifyListeners();
+    // ไม่มีการเรียก resetStatus() หรือตั้งค่า _status กลับเป็น initial หลังจากแสดง SnackBar
   }
 
   Future<void> deleteAssetByUid(BuildContext context, String uid) async {
@@ -85,6 +86,7 @@ class SettingsBloc extends ChangeNotifier {
     }
 
     notifyListeners();
+    // ไม่มีการเรียก resetStatus() หรือตั้งค่า _status กลับเป็น initial หลังจากแสดง SnackBar
   }
 
   Future<void> updateAssetStatus(
@@ -118,6 +120,7 @@ class SettingsBloc extends ChangeNotifier {
     }
 
     notifyListeners();
+    // ไม่มีการเรียก resetStatus() หรือตั้งค่า _status กลับเป็น initial หลังจากแสดง SnackBar
   }
 
   void resetStatus() {
@@ -125,4 +128,6 @@ class SettingsBloc extends ChangeNotifier {
     _errorMessage = '';
     notifyListeners();
   }
+
+  // มีเมธอด resetStatus() แต่ไม่ได้ถูกเรียกใช้หลังจากการทำงานเสร็จ
 }

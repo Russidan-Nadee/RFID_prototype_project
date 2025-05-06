@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:flutter/material.dart';
 import '../../../core/services/rfid_service.dart';
 
 // โหมดการจำลองสำหรับทดสอบ

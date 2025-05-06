@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../common_widgets/buttons/primary_button.dart';
 import '../../../common_widgets/layouts/screen_container.dart';
 import '../../../common_widgets/inputs/text_input.dart';
+import '../../../../domain/usecases/assets/create_asset_usecase.dart';
 
 class NotFoundScreen extends StatefulWidget {
   final String uid;
@@ -13,15 +15,19 @@ class NotFoundScreen extends StatefulWidget {
 }
 
 class _NotFoundScreenState extends State<NotFoundScreen> {
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _assetIdController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _departmentController = TextEditingController();
+  final TextEditingController _brandController = TextEditingController();
+
+  bool _isCreating = false;
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _assetIdController.dispose();
     _categoryController.dispose();
-    _locationController.dispose();
+    _departmentController.dispose();
+    _brandController.dispose();
     super.dispose();
   }
 
@@ -85,12 +91,22 @@ class _NotFoundScreenState extends State<NotFoundScreen> {
 
                     const SizedBox(height: 16),
 
-                    // ช่องกรอกชื่อสินทรัพย์
+                    // ช่องกรอกรหัสสินทรัพย์
                     TextInput(
-                      controller: _nameController,
-                      label: 'Asset Name',
-                      hint: 'Enter asset name',
+                      controller: _assetIdController,
+                      label: 'Asset ID',
+                      hint: 'Enter asset ID',
                       prefixIcon: Icons.inventory,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // ช่องกรอกแบรนด์
+                    TextInput(
+                      controller: _brandController,
+                      label: 'Brand',
+                      hint: 'Enter brand',
+                      prefixIcon: Icons.business,
                     ),
 
                     const SizedBox(height: 16),
@@ -105,12 +121,12 @@ class _NotFoundScreenState extends State<NotFoundScreen> {
 
                     const SizedBox(height: 16),
 
-                    // ช่องกรอกสถานที่
+                    // ช่องกรอกแผนก
                     TextInput(
-                      controller: _locationController,
-                      label: 'Location',
-                      hint: 'Enter location',
-                      prefixIcon: Icons.location_on,
+                      controller: _departmentController,
+                      label: 'Department',
+                      hint: 'Enter department',
+                      prefixIcon: Icons.apartment,
                     ),
                   ],
                 ),
@@ -124,6 +140,7 @@ class _NotFoundScreenState extends State<NotFoundScreen> {
               child: PrimaryButton(
                 text: 'Register New Asset',
                 icon: Icons.add_circle_outline,
+                isLoading: _isCreating,
                 onPressed: _registerNewAsset,
               ),
             ),
@@ -148,11 +165,12 @@ class _NotFoundScreenState extends State<NotFoundScreen> {
   }
 
   // ฟังก์ชันบันทึกสินทรัพย์ใหม่
-  void _registerNewAsset() {
+  Future<void> _registerNewAsset() async {
     // ตรวจสอบข้อมูลที่กรอก
-    if (_nameController.text.isEmpty ||
+    if (_assetIdController.text.isEmpty ||
         _categoryController.text.isEmpty ||
-        _locationController.text.isEmpty) {
+        _departmentController.text.isEmpty ||
+        _brandController.text.isEmpty) {
       // แสดงข้อความเตือน
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -163,20 +181,58 @@ class _NotFoundScreenState extends State<NotFoundScreen> {
       return;
     }
 
-    // สร้างสินทรัพย์ใหม่ในระบบ
-    // (ควรใช้ CreateAssetUseCase)
+    setState(() {
+      _isCreating = true;
+    });
 
-    // แสดงข้อความว่าสร้างสำเร็จ
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('New asset registered successfully'),
-        backgroundColor: Colors.green,
-      ),
-    );
+    try {
+      // สร้างสินทรัพย์ใหม่ในระบบโดยใช้ CreateAssetUseCase
+      final createAssetUseCase = Provider.of<CreateAssetUseCase>(
+        context,
+        listen: false,
+      );
+      final newAsset = await createAssetUseCase.execute(
+        id: _assetIdController.text,
+        uid: widget.uid,
+        category: _categoryController.text,
+        brand: _brandController.text,
+        department: _departmentController.text,
+      );
 
-    // กลับไปหน้าสแกน
-    Navigator.of(
-      context,
-    ).popUntil((route) => route.settings.name == '/scanRfid');
+      if (newAsset != null) {
+        // แสดงข้อความว่าสร้างสำเร็จ
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('New asset registered successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // กลับไปหน้าสแกน
+        Navigator.of(
+          context,
+        ).popUntil((route) => route.settings.name == '/scanRfid');
+      } else {
+        // แสดงข้อความว่าเกิดข้อผิดพลาด
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to register new asset'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      // แสดงข้อความว่าเกิดข้อผิดพลาด
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        _isCreating = false;
+      });
+    }
   }
 }

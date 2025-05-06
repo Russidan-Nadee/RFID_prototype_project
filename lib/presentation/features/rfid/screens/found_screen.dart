@@ -188,6 +188,7 @@ class FoundScreen extends StatelessWidget {
       onTap: () {
         // ทำการอัปเดตสถานะใน Repository
         // (ควรใช้ UpdateAssetUseCase)
+        // ปัญหาคือไม่มีการเชื่อมต่อกับ UpdateAssetUseCase จริงๆ
 
         // แสดงข้อความว่าอัปเดตสำเร็จ
         ScaffoldMessenger.of(context).showSnackBar(

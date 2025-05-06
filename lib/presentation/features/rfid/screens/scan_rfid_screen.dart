@@ -6,7 +6,6 @@ import '../../../common_widgets/buttons/primary_button.dart';
 import '../../../common_widgets/layouts/app_bottom_navigation.dart';
 import '../../../common_widgets/layouts/screen_container.dart';
 import '../blocs/rfid_scan_bloc.dart';
-import '../../../../data/datasources/local/mock_rfid_service.dart';
 
 class ScanRfidScreen extends StatefulWidget {
   const ScanRfidScreen({Key? key}) : super(key: key);
@@ -29,7 +28,13 @@ class _ScanRfidScreenState extends State<ScanRfidScreen> {
     if (index == _selectedIndex) return;
     Navigator.pushReplacementNamed(
       context,
-      ['/', '/searchAssets', '/scanRfid', '/viewAssets', '/export'][index],
+      [
+        '/',
+        '/searchAssets',
+        '/scanRfid',
+        '/viewAssets',
+        '/export',
+      ][index], // ควรใช้ NavigationConstants.tabRoutes[index] แทน
     );
   }
 

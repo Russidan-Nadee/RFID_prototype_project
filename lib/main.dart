@@ -1,24 +1,69 @@
 // ไฟล์นี้เป็นจุดเริ่มต้นของแอพ
 
-import 'package:flutter/material.dart'; // เรียกใช้สิ่งที่ Flutter มีให้ใช้ในการสร้างแอพ
-import 'core/navigation/app_routes.dart'; // เรียกใช้ตัวที่บอกว่าหน้าไหนอยู่ตรงไหนในแอพ
-import 'core/theme/app_theme.dart'; // เรียกใช้ตัวที่เก็บสีและแบบต่างๆ ของแอพ
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'core/navigation/app_routes.dart';
+import 'core/theme/app_theme.dart';
+import 'core/di/dependency_injection.dart';
+import 'presentation/features/assets/blocs/asset_bloc.dart';
+import 'presentation/features/dashboard/blocs/dashboard_bloc.dart';
+import 'presentation/features/export/blocs/export_bloc.dart';
+import 'presentation/features/main/blocs/navigation_bloc.dart';
+import 'presentation/features/rfid/blocs/rfid_scan_bloc.dart';
+import 'presentation/features/settings/blocs/settings_bloc.dart';
+import 'domain/usecases/assets/get_assets_usecase.dart';
+import 'domain/usecases/rfid/scan_rfid_usecase.dart';
 
-void main() {
-  runApp(MyApp()); // บอกให้เริ่มทำงานแอพจากตรงนี้
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // เพิ่มบรรทัดนี้เพื่อให้สามารถใช้ async ใน main ได้
+
+  // เริ่มต้น DependencyInjection ก่อนรันแอพ
+  await DependencyInjection.init();
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'RFID Asset Management', // ตั้งชื่อแอพ
-      theme: AppTheme.lightTheme, // เลือกใช้แบบสว่าง
-      initialRoute: AppRoutes.home, // ตั้งให้เริ่มต้นที่หน้าโฮม
-      onGenerateRoute:
-          AppRoutes
-              .generateRoute, // บอกให้ Flutter รู้วิธีสร้างหน้าต่างๆ เมื่อมีการนำทาง
-      debugShowCheckedModeBanner: false, // ปิดไม่ให้แสดงป้าย DEBUG ที่มุมบนขวา
+    return MultiProvider(
+      providers: [
+        // ลงทะเบียน Provider สำหรับทุก Bloc
+        ChangeNotifierProvider(create: (_) => NavigationBloc()),
+        ChangeNotifierProvider(
+          create:
+              (_) =>
+                  AssetBloc(DependencyInjection.getIt.get<GetAssetsUseCase>()),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => DashboardBloc(
+                DependencyInjection.getIt.get<GetAssetsUseCase>(),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) =>
+                  ExportBloc(DependencyInjection.getIt.get<GetAssetsUseCase>()),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => RfidScanBloc(
+                DependencyInjection.getIt.get<ScanRfidUseCase>(),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SettingsBloc(DependencyInjection.getIt.get()),
+        ),
+        // เพิ่ม Provider อื่นๆ ตามที่จำเป็น
+      ],
+      child: MaterialApp(
+        title: 'RFID Asset Management',
+        theme: AppTheme.lightTheme,
+        initialRoute: AppRoutes.home,
+        onGenerateRoute: AppRoutes.generateRoute,
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }
