@@ -66,7 +66,6 @@ class MockRfidService implements RfidService {
         return null;
 
       case MockMode.normal:
-      default:
         // โหมดปกติ - สุ่มว่าจะสแกนสำเร็จหรือไม่ และสุ่มว่าจะเจอหรือไม่เจอ
         if (Random().nextDouble() < 0.9) {
           // 90% โอกาสที่จะสแกนสำเร็จ

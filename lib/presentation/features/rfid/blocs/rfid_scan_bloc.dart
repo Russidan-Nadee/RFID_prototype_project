@@ -16,7 +16,6 @@ class RfidScanBloc extends ChangeNotifier {
   String _lastScannedUid = '';
 
   // เพิ่มตัวแปรสำหรับโหมดการจำลอง
-  MockMode _mockMode = MockMode.normal;
 
   RfidScanBloc(this._scanRfidUseCase) {
     // ดึง RFID Service จาก Dependency Injection
