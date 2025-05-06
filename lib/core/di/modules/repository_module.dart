@@ -6,6 +6,9 @@ import 'package:get_it/get_it.dart';
 import '../../../data/repositories/asset_repository_impl.dart';
 // นำเข้าอินเทอร์เฟซ (สัญญา) ของคลังข้อมูลสินทรัพย์
 import '../../../domain/repositories/asset_repository.dart';
+// นำเข้า repository ใหม่สำหรับข้อมูลสุ่ม
+import '../../../data/repositories/random_asset_repository_impl.dart';
+import '../../../domain/repositories/random_asset_repository.dart';
 
 // คลาสโมดูลคลังข้อมูล - ใช้ลงทะเบียนคลังข้อมูลทั้งหมดในแอป
 class RepositoryModule {
@@ -20,6 +23,12 @@ class RepositoryModule {
     // _getIt() เป็นการดึงสิ่งที่ลงทะเบียนไว้แล้ว (น่าจะเป็น DatabaseHelper) มาใช้
     _getIt.registerLazySingleton<AssetRepository>(
       () => AssetRepositoryImpl(_getIt()),
+    );
+
+    // ลงทะเบียน RandomAssetRepository แบบ Lazy Singleton
+    // ไม่จำเป็นต้องมีพารามิเตอร์เพราะสร้างข้อมูลสุ่มเอง
+    _getIt.registerLazySingleton<RandomAssetRepository>(
+      () => RandomAssetRepositoryImpl(),
     );
   }
 }

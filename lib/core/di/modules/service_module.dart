@@ -5,10 +5,12 @@ import 'package:get_it/get_it.dart';
 import 'package:rfid_project/core/services/rfid_service.dart';
 import 'package:rfid_project/data/datasources/local/mock_rfid_service.dart';
 import 'package:rfid_project/domain/repositories/asset_repository.dart';
+import 'package:rfid_project/domain/repositories/random_asset_repository.dart';
 import 'package:rfid_project/domain/usecases/assets/create_asset_usecase.dart';
 import 'package:rfid_project/domain/usecases/assets/get_assets_usecase.dart';
 import 'package:rfid_project/domain/usecases/assets/search_asset_usecase.dart';
 import 'package:rfid_project/domain/usecases/assets/update_asset_usecase.dart';
+import 'package:rfid_project/domain/usecases/rfid/generate_random_asset_info_usecase.dart';
 import 'package:rfid_project/domain/usecases/rfid/get_random_uid_usecase.dart';
 import 'package:rfid_project/domain/usecases/rfid/scan_rfid_usecase.dart';
 
@@ -42,8 +44,14 @@ class ServiceModule {
     // ลงทะเบียน UseCase สำหรับสร้างสินทรัพย์ใหม่
     _getIt.registerLazySingleton(() => CreateAssetUseCase(_getIt()));
 
+    // ลงทะเบียน UseCase สำหรับดึง UID สุ่ม
     _getIt.registerFactory(
       () => GetRandomUidUseCase(_getIt<AssetRepository>()),
+    );
+
+    // ลงทะเบียน UseCase สำหรับสร้างข้อมูลสินทรัพย์สุ่ม
+    _getIt.registerLazySingleton(
+      () => GenerateRandomAssetInfoUseCase(_getIt<RandomAssetRepository>()),
     );
   }
 }

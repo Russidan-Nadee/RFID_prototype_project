@@ -6,6 +6,7 @@ import 'package:rfid_project/domain/usecases/cartegory/add_category_usecase.dart
 import 'package:rfid_project/domain/usecases/cartegory/delete_category_usecase.dart';
 import 'package:rfid_project/domain/usecases/cartegory/get_categories_usecase.dart';
 import 'package:rfid_project/domain/usecases/cartegory/update_category_usecase.dart';
+import 'package:rfid_project/domain/usecases/rfid/generate_random_asset_info_usecase.dart';
 import 'package:rfid_project/domain/usecases/rfid/get_random_uid_usecase.dart';
 import 'package:rfid_project/domain/usecases/rfid/scan_rfid_usecase.dart';
 import 'package:rfid_project/domain/repositories/asset_repository.dart';
@@ -36,10 +37,12 @@ class BlocModule {
     _getIt.registerFactory(() => ExportBloc(_getIt<GetAssetsUseCase>()));
 
     // ลงทะเบียน RfidScanBloc
+    // รับพารามิเตอร์เพิ่มเติมคือ GenerateRandomAssetInfoUseCase
     _getIt.registerFactory(
       () => RfidScanBloc(
         _getIt<ScanRfidUseCase>(),
-        _getIt<GetRandomUidUseCase>(), // เพิ่มพารามิเตอร์ตัวที่ 2
+        _getIt<GetRandomUidUseCase>(),
+        _getIt<GenerateRandomAssetInfoUseCase>(),
       ),
     );
 

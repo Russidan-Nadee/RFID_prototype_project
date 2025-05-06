@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rfid_project/domain/repositories/asset_repository.dart';
+import 'package:rfid_project/domain/usecases/rfid/generate_random_asset_info_usecase.dart';
 import 'package:rfid_project/domain/usecases/rfid/get_random_uid_usecase.dart';
 import 'core/navigation/app_routes.dart';
 import 'core/theme/app_theme.dart';
@@ -56,6 +57,7 @@ class MyApp extends StatelessWidget {
               (_) => RfidScanBloc(
                 DependencyInjection.getIt.get<ScanRfidUseCase>(),
                 DependencyInjection.getIt.get<GetRandomUidUseCase>(),
+                DependencyInjection.getIt.get<GenerateRandomAssetInfoUseCase>(),
               ),
         ),
 

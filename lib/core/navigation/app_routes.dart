@@ -2,6 +2,7 @@
 
 // นำเข้าไลบรารี Flutter สำหรับสร้าง UI
 import 'package:flutter/material.dart';
+import 'package:rfid_project/domain/entities/random_asset_info.dart';
 // นำเข้าหน้าจอค้นหาสินทรัพย์
 import '../../presentation/features/assets/screens/search_assets_screen.dart';
 // นำเข้าหน้าจอดูรายละเอียดสินทรัพย์
@@ -78,14 +79,10 @@ class AppRoutes {
         }
         // กรณีไม่มี args หรือ args ไม่ถูกต้อง ให้กลับไปหน้าสแกน
         return _createRouteWithoutAnimation(ScanRfidScreen());
-      case notFound:
-        // ถ้าเป็นหน้าไม่พบสินทรัพย์ สร้างหน้า NotFoundScreen พร้อมส่ง uid
-        if (args is Map<String, dynamic>) {
-          // ส่งข้อมูล uid ไปยัง NotFoundScreen ที่ไม่มีอนิเมชั่น
-          return _createRouteWithoutAnimation(NotFoundScreen());
-        }
-        // กรณีไม่มี args หรือ args ไม่ถูกต้อง ให้กลับไปหน้าสแกน
-        return _createRouteWithoutAnimation(ScanRfidScreen());
+      case RouteConstants.notFound:
+        // ส่งข้อมูลเป็น positional parameter แทน named parameter
+        return MaterialPageRoute(builder: (_) => NotFoundScreen());
+
       case settings:
         // ถ้าเป็นหน้าตั้งค่า สร้างหน้า SettingsScreen ที่ไม่มีอนิเมชั่น
         return _createRouteWithoutAnimation(SettingsScreen());
