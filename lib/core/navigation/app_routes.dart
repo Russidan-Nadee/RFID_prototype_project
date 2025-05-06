@@ -42,50 +42,58 @@ class AppRoutes {
     // รับ arguments ที่ส่งมาพร้อมกับการนำทาง
     final args = routeSettings.arguments;
 
+    // ฟังก์ชั่นสำหรับสร้าง Route ที่ไม่มีอนิเมชั่น
+    Route<dynamic> _createRouteWithoutAnimation(Widget page) {
+      return PageRouteBuilder(
+        settings: routeSettings,
+        pageBuilder: (_, __, ___) => page,
+        transitionDuration: Duration.zero,
+        reverseTransitionDuration: Duration.zero,
+      );
+    }
+
     // ตรวจสอบชื่อเส้นทางและสร้างหน้าจอที่เหมาะสม
     switch (routeSettings.name) {
       case home:
-        // ถ้าเป็นหน้าหลัก สร้างหน้า HomeScreen
-        return MaterialPageRoute(builder: (_) => HomeScreen());
+        // ถ้าเป็นหน้าหลัก สร้างหน้า HomeScreen ที่ไม่มีอนิเมชั่น
+        return _createRouteWithoutAnimation(HomeScreen());
       case searchAssets:
-        // ถ้าเป็นหน้าค้นหา สร้างหน้า SearchAssetsScreen
-        return MaterialPageRoute(builder: (_) => SearchAssetsScreen());
+        // ถ้าเป็นหน้าค้นหา สร้างหน้า SearchAssetsScreen ที่ไม่มีอนิเมชั่น
+        return _createRouteWithoutAnimation(SearchAssetsScreen());
       case scanRfid:
-        // ถ้าเป็นหน้าสแกน สร้างหน้า ScanRfidScreen
-        return MaterialPageRoute(builder: (_) => ScanRfidScreen());
+        // ถ้าเป็นหน้าสแกน สร้างหน้า ScanRfidScreen ที่ไม่มีอนิเมชั่น
+        return _createRouteWithoutAnimation(ScanRfidScreen());
       case viewAssets:
-        // ถ้าเป็นหน้าดูสินทรัพย์ สร้างหน้า ViewAssetsScreen
-        return MaterialPageRoute(builder: (_) => ViewAssetsScreen());
+        // ถ้าเป็นหน้าดูสินทรัพย์ สร้างหน้า ViewAssetsScreen ที่ไม่มีอนิเมชั่น
+        return _createRouteWithoutAnimation(ViewAssetsScreen());
       case export:
-        // ถ้าเป็นหน้าส่งออก สร้างหน้า ExportScreen
-        return MaterialPageRoute(builder: (_) => ExportScreen());
+        // ถ้าเป็นหน้าส่งออก สร้างหน้า ExportScreen ที่ไม่มีอนิเมชั่น
+        return _createRouteWithoutAnimation(ExportScreen());
       case found:
         // ถ้าเป็นหน้าพบสินทรัพย์ สร้างหน้า FoundScreen พร้อมส่งข้อมูล asset และ uid
         // ตรวจสอบว่ามีการส่ง args มาหรือไม่
         if (args is Map<String, dynamic>) {
-          // ส่งข้อมูล asset และ uid ไปยัง FoundScreen
-          return MaterialPageRoute(
-            builder: (_) => FoundScreen(asset: args['asset'], uid: args['uid']),
+          // ส่งข้อมูล asset และ uid ไปยัง FoundScreen ที่ไม่มีอนิเมชั่น
+          return _createRouteWithoutAnimation(
+            FoundScreen(asset: args['asset'], uid: args['uid']),
           );
         }
         // กรณีไม่มี args หรือ args ไม่ถูกต้อง ให้กลับไปหน้าสแกน
-        return MaterialPageRoute(builder: (_) => ScanRfidScreen());
+        return _createRouteWithoutAnimation(ScanRfidScreen());
       case notFound:
         // ถ้าเป็นหน้าไม่พบสินทรัพย์ สร้างหน้า NotFoundScreen พร้อมส่ง uid
         if (args is Map<String, dynamic>) {
-          // ส่งข้อมูล uid ไปยัง NotFoundScreen
-          return MaterialPageRoute(
-            builder: (_) => NotFoundScreen(uid: args['uid']),
-          );
+          // ส่งข้อมูล uid ไปยัง NotFoundScreen ที่ไม่มีอนิเมชั่น
+          return _createRouteWithoutAnimation(NotFoundScreen(uid: args['uid']));
         }
         // กรณีไม่มี args หรือ args ไม่ถูกต้อง ให้กลับไปหน้าสแกน
-        return MaterialPageRoute(builder: (_) => ScanRfidScreen());
+        return _createRouteWithoutAnimation(ScanRfidScreen());
       case settings:
-        // ถ้าเป็นหน้าตั้งค่า สร้างหน้า SettingsScreen
-        return MaterialPageRoute(builder: (_) => SettingsScreen());
+        // ถ้าเป็นหน้าตั้งค่า สร้างหน้า SettingsScreen ที่ไม่มีอนิเมชั่น
+        return _createRouteWithoutAnimation(SettingsScreen());
       default:
-        // ถ้าไม่ตรงกับเส้นทางใดเลย ให้ไปที่หน้าหลัก
-        return MaterialPageRoute(builder: (_) => HomeScreen());
+        // ถ้าไม่ตรงกับเส้นทางใดเลย ให้ไปที่หน้าหลักที่ไม่มีอนิเมชั่น
+        return _createRouteWithoutAnimation(HomeScreen());
     }
   }
 }
