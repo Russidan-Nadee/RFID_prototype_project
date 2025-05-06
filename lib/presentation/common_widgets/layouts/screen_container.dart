@@ -1,34 +1,46 @@
+// ไฟล์ lib/presentation/common_widgets/layouts/screen_container.dart
 import 'package:flutter/material.dart';
 
 class ScreenContainer extends StatelessWidget {
   final Widget child;
-  final bool usePadding;
   final PreferredSizeWidget? appBar;
   final Widget? bottomNavigationBar;
-  final Widget? floatingActionButton;
-  final Color? backgroundColor;
 
   const ScreenContainer({
     Key? key,
     required this.child,
-    this.usePadding = true,
     this.appBar,
     this.bottomNavigationBar,
-    this.floatingActionButton,
-    this.backgroundColor,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // สร้าง AppBar ใหม่ที่ไม่มีปุ่มย้อนกลับเสมอ
+    final modifiedAppBar =
+        appBar != null ? _createAppBarWithoutBackButton(appBar!) : null;
+
     return Scaffold(
-      appBar: appBar,
-      backgroundColor: backgroundColor,
-      body:
-          usePadding
-              ? Padding(padding: const EdgeInsets.all(16.0), child: child)
-              : child,
+      appBar: modifiedAppBar,
+      body: child,
       bottomNavigationBar: bottomNavigationBar,
-      floatingActionButton: floatingActionButton,
     );
+  }
+
+  // สร้าง AppBar ใหม่โดยไม่มีปุ่มย้อนกลับในทุกหน้า
+  PreferredSizeWidget _createAppBarWithoutBackButton(
+    PreferredSizeWidget originalAppBar,
+  ) {
+    if (originalAppBar is AppBar) {
+      return AppBar(
+        automaticallyImplyLeading: false, // ปิดการแสดงปุ่มย้อนกลับในทุกหน้า
+        title: originalAppBar.title,
+        actions: originalAppBar.actions,
+        backgroundColor: originalAppBar.backgroundColor,
+        elevation: originalAppBar.elevation,
+        centerTitle: originalAppBar.centerTitle,
+        bottom: originalAppBar.bottom,
+      );
+    }
+    return originalAppBar;
   }
 }
