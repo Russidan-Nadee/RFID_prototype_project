@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: export-service
+  labels:
+    app: export-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: export-service
+  template:
+    metadata:
+      labels:
+        app: export-service
+    spec:
+      containers:
+      - name: export-service
+        image: rfid-project/export-service:latest
+        ports:
+        - containerPort: 8004
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "512Mi"
+          requests:
+            cpu: "0.2"
+            memory: "256Mi"
+        volumeMounts:
+        - name: export-data
+          mountPath: /app/exports
+      volumes:
+      - name: export-data
+        persistentVolumeClaim:
+          claimName: export-data-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: export-service
+spec:
+  selector:
+    app: export-service
+  ports:
+  - port: 8004
+    targetPort: 8004
+  type: ClusterIP

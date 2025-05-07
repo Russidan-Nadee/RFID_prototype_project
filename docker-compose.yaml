@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  asset_service:
+    build:
+      context: .
+      dockerfile: docker/asset_service.dockerfile
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./data/assets:/app/data
+    restart: always
+    networks:
+      - rfid_network
+
+  rfid_service:
+    build:
+      context: .
+      dockerfile: docker/rfid_service.dockerfile
+    ports:
+      - "8002:8002"
+    restart: always
+    networks:
+      - rfid_network
+    depends_on:
+      - asset_service
+
+  dashboard_service:
+    build:
+      context: .
+      dockerfile: docker/dashboard_service.dockerfile
+    ports:
+      - "8003:8003"
+    restart: always
+    networks:
+      - rfid_network
+    depends_on:
+      - asset_service
+      - rfid_service
+
+  export_service:
+    build:
+      context: .
+      dockerfile: docker/export_service.dockerfile
+    ports:
+      - "8004:8004"
+    volumes:
+      - ./data/exports:/app/exports
+    restart: always
+    networks:
+      - rfid_network
+    depends_on:
+      - asset_service
+
+  api_gateway:
+    build:
+      context: .
+      dockerfile: docker/api_gateway.dockerfile
+    ports:
+      - "8000:8000"
+    restart: always
+    networks:
+      - rfid_network
+    depends_on:
+      - asset_service
+      - rfid_service
+      - dashboard_service
+      - export_service
+
+networks:
+  rfid_network:
+    driver: bridge

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: asset-service
+  labels:
+    app: asset-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: asset-service
+  template:
+    metadata:
+      labels:
+        app: asset-service
+    spec:
+      containers:
+      - name: asset-service
+        image: rfid-project/asset-service:latest
+        ports:
+        - containerPort: 8001
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "512Mi"
+          requests:
+            cpu: "0.2"
+            memory: "256Mi"
+        volumeMounts:
+        - name: asset-data
+          mountPath: /app/data
+      volumes:
+      - name: asset-data
+        persistentVolumeClaim:
+          claimName: asset-data-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: asset-service
+spec:
+  selector:
+    app: asset-service
+  ports:
+  - port: 8001
+    targetPort: 8001
+  type: ClusterIP
