@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../../../../../../core/configuration/app_config.dart';
+import 'package:rfid_project/waitforedit/corewait/config/app_config.dart';
 import '../../../../../../core/exceptions/error_handler.dart';
 
 class AssetServiceClient {

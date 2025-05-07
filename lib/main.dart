@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'core/configuration/app_config.dart';
-import 'core/di/dependency_injection.dart';
-import 'core/navigation/app_routes.dart';
-import 'core/theme/app_theme.dart';
-import 'features/assets/bloc/asset_bloc.dart';
-import 'features/dashboard/bloc/dashboard_bloc.dart';
-import 'features/export/bloc/export_bloc.dart';
-import 'features/main/bloc/navigation_bloc.dart';
-import 'features/rfid/bloc/rfid_bloc.dart';
-import 'features/search/bloc/search_bloc.dart';
+import 'package:rfid_project/waitforedit/corewait/config/app_config.dart';
+import 'package:rfid_project/waitforedit/corewait/di/dependency_injection.dart';
+import 'package:rfid_project/waitforedit/corewait/navigation/app_routes.dart';
+import 'package:rfid_project/waitforedit/corewait/theme/app_theme.dart';
+import 'package:rfid_project/waitforedit/presentation/features/assets/blocs/asset_bloc.dart';
+import 'package:rfid_project/waitforedit/presentation/features/dashboard/blocs/dashboard_bloc.dart';
+import 'package:rfid_project/waitforedit/presentation/features/export/blocs/export_bloc.dart';
+import 'package:rfid_project/waitforedit/presentation/features/main/blocs/navigation_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
