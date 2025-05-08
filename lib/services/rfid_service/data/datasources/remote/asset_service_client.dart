@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import '../../../../../../core/configuration/app_config.dart';
-import '../../../../../../core/exceptions/app_exceptions.dart';
 import '../../../../../../core/exceptions/error_handler.dart';
 
 class AssetServiceClient {
@@ -25,7 +24,7 @@ class AssetServiceClient {
       }
 
       return false;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       if (e.response?.statusCode == 404) {
         // สินทรัพย์ไม่พบ ถือว่าปกติ
         return false;
@@ -50,7 +49,7 @@ class AssetServiceClient {
       }
 
       return null;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       if (e.response?.statusCode == 404) {
         // สินทรัพย์ไม่พบ ส่งค่า null กลับไป
         return null;

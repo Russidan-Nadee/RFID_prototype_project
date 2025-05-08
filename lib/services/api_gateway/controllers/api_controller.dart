@@ -186,7 +186,7 @@ class ApiController {
 
   // ตัวช่วยจัดการข้อผิดพลาด
   Response _handleError(dynamic error) {
-    if (error is dio.DioError) {
+    if (error is dio.DioException) {
       if (error.response != null) {
         return Response(
           error.response!.statusCode ?? 500,

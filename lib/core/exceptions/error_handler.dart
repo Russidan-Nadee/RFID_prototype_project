@@ -4,7 +4,7 @@ import 'app_exceptions.dart';
 
 class ErrorHandler {
   static AppException handleError(dynamic error) {
-    if (error is DioError) {
+    if (error is DioException) {
       return _handleDioError(error);
     } else if (error is SocketException) {
       return FetchDataException('ไม่สามารถเชื่อมต่ออินเตอร์เน็ตได้');
@@ -19,18 +19,18 @@ class ErrorHandler {
     }
   }
 
-  static AppException _handleDioError(DioError error) {
+  static AppException _handleDioError(DioException error) {
     switch (error.type) {
-      case DioErrorType.connectionTimeout:
-      case DioErrorType.sendTimeout:
-      case DioErrorType.receiveTimeout:
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
         return FetchDataException('หมดเวลาการเชื่อมต่อ');
-      case DioErrorType.badResponse:
+      case DioExceptionType.badResponse:
         return _handleResponseError(
           error.response?.statusCode ?? 500,
           error.response?.data ?? 'เกิดข้อผิดพลาดที่เซิร์ฟเวอร์',
         );
-      case DioErrorType.cancel:
+      case DioExceptionType.cancel:
         return FetchDataException('ยกเลิกการเชื่อมต่อ');
       default:
         return FetchDataException('เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ');

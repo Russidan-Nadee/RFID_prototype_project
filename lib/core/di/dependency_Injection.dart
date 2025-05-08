@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import '../configuration/app_config.dart';
+import 'package:rfid_project/services/dashboard_service/data/datasources/remote/asset_service_client.dart';
+import 'package:rfid_project/services/export_service/data/datasources/remote/asset_service_client.dart';
+import 'package:rfid_project/shared/interfaces/asset_service_client_interface.dart';
 import '../../services/asset_service/data/datasources/local/asset_database.dart';
 import '../../services/asset_service/data/repositories/asset_repository_impl.dart';
 import '../../services/asset_service/domain/repositories/asset_repository.dart';
 import '../../services/dashboard_service/data/repositories/dashboard_repository_impl.dart';
-import '../../services/dashboard_service/data/datasources/remote/asset_service_client.dart';
 import '../../services/dashboard_service/data/datasources/remote/rfid_service_client.dart';
 import '../../services/export_service/data/repositories/export_repository_impl.dart';
 import '../../services/export_service/data/datasources/local/export_database.dart';
@@ -31,8 +32,14 @@ class DependencyInjection {
     _locator.registerSingleton<ExportDatabase>(exportDatabase);
 
     // ลงทะเบียน Clients
-    _locator.registerLazySingleton<AssetServiceClient>(
-      () => AssetServiceClient(),
+    _locator.registerLazySingleton<AssetServiceClientInterface>(
+      () => DashboardAssetServiceClient(),
+      instanceName: 'dashboard_asset_client',
+    );
+
+    _locator.registerLazySingleton<AssetServiceClientInterface>(
+      () => ExportAssetServiceClient(),
+      instanceName: 'export_asset_client',
     );
 
     _locator.registerLazySingleton<RfidServiceClient>(
@@ -54,7 +61,9 @@ class DependencyInjection {
 
     _locator.registerLazySingleton<DashboardRepositoryImpl>(
       () => DashboardRepositoryImpl(
-        _locator<AssetServiceClient>(),
+        _locator.get<AssetServiceClientInterface>(
+          instanceName: 'dashboard_asset_client',
+        ),
         _locator<RfidServiceClient>(),
       ),
     );
@@ -62,7 +71,9 @@ class DependencyInjection {
     _locator.registerLazySingleton<ExportRepositoryImpl>(
       () => ExportRepositoryImpl(
         _locator<ExportDatabase>(),
-        _locator<AssetServiceClient>(),
+        _locator.get<AssetServiceClientInterface>(
+          instanceName: 'export_asset_client',
+        ),
       ),
     );
 
