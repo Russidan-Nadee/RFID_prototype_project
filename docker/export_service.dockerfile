@@ -1,45 +1,19 @@
-FROM ubuntu:22.04
+FROM ghcr.io/cirruslabs/flutter:stable
 
-# ตั้งค่าสภาพแวดล้อม
-ENV DEBIAN_FRONTEND=noninteractive
-
-# ติดตั้งเครื่องมือพื้นฐาน
-RUN apt-get update && apt-get install -y \
-   curl \
-   git \
-   unzip \
-   libsqlite3-dev \
-   && rm -rf /var/lib/apt/lists/*
-
-# ติดตั้ง Dart SDK
-RUN apt-get update && apt-get install -y apt-transport-https
-RUN curl -fsSL https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-RUN curl -fsSL https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list
-RUN apt-get update && apt-get install -y dart
-
-# เพิ่ม Dart SDK ลงใน PATH
-ENV PATH="$PATH:/usr/lib/dart/bin:/root/.pub-cache/bin"
-
-# สร้างโฟลเดอร์สำหรับแอป
 WORKDIR /app
 
 # สร้างโฟลเดอร์สำหรับเก็บไฟล์ส่งออก
 RUN mkdir -p /app/exports
 
-# คัดลอกโค้ดโปรเจค
 COPY . .
 
-# เริ่มต้นติดตั้ง dependencies
-RUN dart pub get
+RUN flutter pub get
 
-# คอมไพล์แอป
-RUN dart compile exe lib/services/export_service/main.dart -o export_service
+# RUN dart compile exe lib/services/export_service/main.dart -o export_service
 
 # กำหนดสิทธิ์การเข้าถึงโฟลเดอร์ exports
 RUN chmod -R 777 /app/exports
 
-# เปิดพอร์ต
 EXPOSE 8004
 
-# รันแอป
-CMD ["./export_service"]
+CMD ["dart", "lib/services/export_service/main.dart"] 

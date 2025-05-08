@@ -1,8 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rfid_project/services/dashboard_service/data/datasources/remote/asset_service_client.dart';
-import 'package:rfid_project/services/export_service/data/datasources/remote/asset_service_client.dart'
-    as export_asset_client;
 import 'package:rfid_project/shared/interfaces/asset_service_client_interface.dart';
 import '../../services/asset_service/data/datasources/local/asset_database.dart';
 import '../../services/asset_service/data/repositories/asset_repository_impl.dart';
