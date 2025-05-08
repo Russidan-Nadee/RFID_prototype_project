@@ -48,6 +48,10 @@ dependencies:
   shelf_router: ^1.0.0
   shelf: ^1.4.0
   shelf_static: ^1.1.0
+  firebase_core: ^2.15.0
+  cloud_firestore: ^4.8.4
+  firebase_auth: ^4.7.2
+  firebase_storage: ^11.2.5
   
   # Chart dependencies for data visualization
   fl_chart: ^0.63.0
