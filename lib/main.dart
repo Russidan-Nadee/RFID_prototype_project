@@ -1,54 +1,31 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:rfid_project/waitforedit/corewait/config/app_config.dart';
-import 'package:rfid_project/waitforedit/corewait/di/dependency_injection.dart';
-import 'package:rfid_project/waitforedit/corewait/navigation/app_routes.dart';
-import 'package:rfid_project/waitforedit/corewait/theme/app_theme.dart';
-import 'package:rfid_project/waitforedit/presentation/features/assets/blocs/asset_bloc.dart';
-import 'package:rfid_project/waitforedit/presentation/features/dashboard/blocs/dashboard_bloc.dart';
-import 'package:rfid_project/waitforedit/presentation/features/export/blocs/export_bloc.dart';
-import 'package:rfid_project/waitforedit/presentation/features/main/blocs/navigation_bloc.dart';
+import 'package:rfid_project/services/asset_service/api/routes/asset_routes.dart';
+import 'package:rfid_project/services/asset_service/data/datasources/local/asset_database.dart';
+import 'package:rfid_project/services/asset_service/data/repositories/asset_repository_impl.dart';
+import 'package:rfid_project/services/asset_service/domain/repositories/asset_repository.dart';
+import 'package:shelf/shelf.dart';
+import 'package:shelf/shelf_io.dart' as io;
+import 'package:shelf_router/shelf_router.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  // เริ่มต้นฐานข้อมูล
+  final assetDatabase = AssetDatabase();
+  await assetDatabase.init();
 
-  // เริ่มต้น Dependency Injection
-  await DependencyInjection.init();
+  // สร้าง repository
+  final AssetRepository assetRepository = AssetRepositoryImpl(assetDatabase);
 
-  runApp(MyApp());
-}
+  // สร้าง router และกำหนด routes
+  final router = Router();
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => NavigationBloc()),
-        ChangeNotifierProvider(
-          create: (_) => AssetBloc(DependencyInjection.get()),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => DashboardBloc(DependencyInjection.get()),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ExportBloc(DependencyInjection.get()),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => RfidBloc(DependencyInjection.get()),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => SearchBloc(DependencyInjection.get()),
-        ),
-      ],
-      child: MaterialApp(
-        title: AppConfig.appName,
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system,
-        initialRoute: AppRoutes.home,
-        onGenerateRoute: AppRoutes.generateRoute,
-        debugShowCheckedModeBanner: false,
-      ),
-    );
-  }
+  // ลงทะเบียน routes
+  AssetRoutes(router, assetRepository).registerRoutes();
+
+  // สร้าง handler พร้อม middleware
+  final handler = Pipeline().addMiddleware(logRequests()).addHandler(router);
+
+  // เริ่มต้น server
+  final server = await io.serve(handler, '0.0.0.0', 8001);
+  print(
+    'Asset Service เริ่มทำงานแล้วที่ http://${server.address.host}:${server.port}',
+  );
 }

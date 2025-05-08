@@ -1,11 +1,15 @@
 import 'package:shelf_router/shelf_router.dart';
 import '../controllers/asset_controller.dart';
+import '../../domain/repositories/asset_repository.dart';
 
 class AssetRoutes {
   final Router _router;
   final AssetController _controller;
 
-  AssetRoutes(this._router, this._controller);
+  // แก้ไขคอนสตรักเตอร์เพื่อรับ AssetRepository แทน AssetController
+  // สร้าง AssetController ภายในคลาส
+  AssetRoutes(this._router, AssetRepository repository)
+    : _controller = AssetController(repository);
 
   void registerRoutes() {
     // เส้นทางสำหรับสินทรัพย์

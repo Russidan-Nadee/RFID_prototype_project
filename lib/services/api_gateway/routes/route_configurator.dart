@@ -6,6 +6,7 @@ class RouteConfigurator {
 
   RouteConfigurator(this._router);
 
+  // แก้ไขให้รองรับ Future<Response> Function(Request) สำหรับทุกเมธอด
   void get(String path, Future<Response> Function(Request) handler) {
     _router.get(path, handler);
   }

@@ -1,12 +1,11 @@
 import 'dart:convert';
-import 'package:dio/dio.dart';
-import 'package:rfid_project/waitforedit/corewait/config/app_config.dart';
+import 'package:dio/dio.dart' as dio;
 import 'package:shelf/shelf.dart';
 import '../../../core/configuration/app_config.dart';
 import '../../../core/exceptions/error_handler.dart';
 
 class ApiController {
-  final Dio _dio = Dio();
+  final dio.Dio _dio = dio.Dio();
 
   // ดึงข้อมูลจาก Asset Service
   Future<Response> getAssets(Request request) async {
@@ -165,7 +164,7 @@ class ApiController {
     try {
       final response = await _dio.get(
         '${AppConfig.exportServiceUrl}/exports/$id',
-        options: Options(responseType: ResponseType.bytes),
+        options: dio.Options(responseType: dio.ResponseType.bytes),
       );
 
       final contentType = response.headers.map['content-type']?.first;
@@ -187,7 +186,7 @@ class ApiController {
 
   // ตัวช่วยจัดการข้อผิดพลาด
   Response _handleError(dynamic error) {
-    if (error is DioError) {
+    if (error is dio.DioError) {
       if (error.response != null) {
         return Response(
           error.response!.statusCode ?? 500,

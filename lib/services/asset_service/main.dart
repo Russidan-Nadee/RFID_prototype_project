@@ -1,34 +1,67 @@
-import 'package:shelf/shelf.dart';
-import 'package:shelf/shelf_io.dart' as io;
-import 'package:shelf_router/shelf_router.dart';
-import 'api/controllers/asset_controller.dart';
-import 'api/routes/asset_routes.dart';
-import 'data/datasources/local/asset_database.dart';
-import 'data/repositories/asset_repository_impl.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:rfid_project/core/configuration/app_config.dart';
+import 'package:rfid_project/core/di/dependency_injection.dart';
+import 'package:rfid_project/core/navigation/app_routes.dart';
+import 'package:rfid_project/shared/utils/theme_utils.dart';
+import 'package:rfid_project/features/assets/bloc/asset_bloc.dart';
+import 'package:rfid_project/features/dashboard/bloc/dashboard_bloc.dart';
+import 'package:rfid_project/features/export/bloc/export_bloc.dart';
+import 'package:rfid_project/features/rfid/bloc/rfid_bloc.dart';
+import 'package:rfid_project/features/search/bloc/search_bloc.dart';
 
 void main() async {
-  // เริ่มต้นฐานข้อมูล
-  final assetDatabase = AssetDatabase();
-  await assetDatabase.init();
+  WidgetsFlutterBinding.ensureInitialized();
 
-  // สร้าง repository
-  final assetRepository = AssetRepositoryImpl(assetDatabase);
+  // เริ่มต้น Dependency Injection
+  await DependencyInjection.init();
 
-  // สร้าง controller
-  final assetController = AssetController(assetRepository);
+  runApp(MyApp());
+}
 
-  // สร้าง router และกำหนด routes
-  final router = Router();
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => NavigationBloc()),
+        ChangeNotifierProvider(
+          create: (_) => AssetBloc(DependencyInjection.get()),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => DashboardBloc(DependencyInjection.get()),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ExportBloc(DependencyInjection.get()),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => RfidBloc(DependencyInjection.get()),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SearchBloc(DependencyInjection.get()),
+        ),
+      ],
+      child: MaterialApp(
+        title: AppConfig.appName,
+        theme: ThemeUtils.getLightTheme(),
+        darkTheme: ThemeUtils.getDarkTheme(),
+        themeMode: ThemeMode.system,
+        initialRoute: AppRoutes.home,
+        onGenerateRoute: AppRoutes.generateRoute,
+        debugShowCheckedModeBanner: false,
+      ),
+    );
+  }
+}
 
-  // ลงทะเบียน routes
-  AssetRoutes(router, assetController).registerRoutes();
+// สร้าง NavigationBloc ชั่วคราวเพื่อให้โค้ดทำงานได้
+class NavigationBloc extends ChangeNotifier {
+  int _currentIndex = 0;
 
-  // สร้าง handler พร้อม middleware
-  final handler = Pipeline().addMiddleware(logRequests()).addHandler(router);
+  int get currentIndex => _currentIndex;
 
-  // เริ่มต้น server
-  final server = await io.serve(handler, '0.0.0.0', 8001);
-  print(
-    'Asset Service เริ่มทำงานแล้วที่ http://${server.address.host}:${server.port}',
-  );
+  void navigateTo(int index) {
+    _currentIndex = index;
+    notifyListeners();
+  }
 }
