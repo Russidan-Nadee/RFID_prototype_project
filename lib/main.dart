@@ -1,31 +1,86 @@
-import 'package:rfid_project/services/asset_service/api/routes/asset_routes.dart';
-import 'package:rfid_project/services/asset_service/data/datasources/local/asset_database.dart';
-import 'package:rfid_project/services/asset_service/data/repositories/asset_repository_impl.dart';
-import 'package:rfid_project/services/asset_service/domain/repositories/asset_repository.dart';
-import 'package:shelf/shelf.dart';
-import 'package:shelf/shelf_io.dart' as io;
-import 'package:shelf_router/shelf_router.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'core/di/dependency_injection.dart';
+import 'features/rfid/bloc/rfid_bloc.dart';
+import 'features/search/bloc/search_bloc.dart';
+import 'shared/utils/theme_utils.dart';
 
 void main() async {
-  // เริ่มต้นฐานข้อมูล
-  final assetDatabase = AssetDatabase();
-  await assetDatabase.init();
+  WidgetsFlutterBinding.ensureInitialized();
 
-  // สร้าง repository
-  final AssetRepository assetRepository = AssetRepositoryImpl(assetDatabase);
+  // เริ่มต้น Dependency Injection
+  await DependencyInjection.init();
 
-  // สร้าง router และกำหนด routes
-  final router = Router();
+  runApp(MyApp());
+}
 
-  // ลงทะเบียน routes
-  AssetRoutes(router, assetRepository).registerRoutes();
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => NavigationBloc()),
+        ChangeNotifierProvider(
+          create: (_) => RfidBloc(DependencyInjection.get()),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SearchBloc(DependencyInjection.get()),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'RFID Asset Management',
+        theme: ThemeUtils.getLightTheme(),
+        darkTheme: ThemeUtils.getDarkTheme(),
+        themeMode: ThemeMode.system,
+        home: HomePage(),
+        debugShowCheckedModeBanner: false,
+      ),
+    );
+  }
+}
 
-  // สร้าง handler พร้อม middleware
-  final handler = Pipeline().addMiddleware(logRequests()).addHandler(router);
+class NavigationBloc extends ChangeNotifier {
+  int _currentIndex = 0;
 
-  // เริ่มต้น server
-  final server = await io.serve(handler, '0.0.0.0', 8001);
-  print(
-    'Asset Service เริ่มทำงานแล้วที่ http://${server.address.host}:${server.port}',
-  );
+  int get currentIndex => _currentIndex;
+
+  void navigateTo(int index) {
+    _currentIndex = index;
+    notifyListeners();
+  }
+}
+
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('RFID Asset Management')),
+      body: Center(
+        child: Text('เริ่มต้นใช้งานแอพพลิเคชัน RFID Asset Management'),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: Provider.of<NavigationBloc>(context).currentIndex,
+        onTap:
+            (index) => Provider.of<NavigationBloc>(
+              context,
+              listen: false,
+            ).navigateTo(index),
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard),
+            label: 'แดชบอร์ด',
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.nfc), label: 'สแกน RFID'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.inventory),
+            label: 'สินทรัพย์',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.import_export),
+            label: 'ส่งออก',
+          ),
+        ],
+      ),
+    );
+  }
 }

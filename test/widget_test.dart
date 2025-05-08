@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rfid_project/waitforedit/main.dart'; // ใช้ main.dart ในการเริ่มต้นแอป
+import 'package:rfid_project/main.dart';
 
 void main() {
   testWidgets('MainScreen BottomNavigationBar test', (
