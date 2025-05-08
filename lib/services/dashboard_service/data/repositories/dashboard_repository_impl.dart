@@ -1,12 +1,12 @@
-import 'package:rfid_project/services/export_service/data/datasources/remote/asset_service_client.dart';
-
+// services/dashboard_service/data/repositories/dashboard_repository_impl.dart
 import '../../domain/entities/dashboard_stats.dart';
 import '../../domain/repositories/dashboard_repository.dart';
 import '../datasources/remote/rfid_service_client.dart';
 import '../models/dashboard_stats_model.dart';
+import 'package:rfid_project/shared/interfaces/asset_service_client_interface.dart';
 
 class DashboardRepositoryImpl implements DashboardRepository {
-  final AssetServiceClient _assetServiceClient;
+  final AssetServiceClientInterface _assetServiceClient;
   final RfidServiceClient _rfidServiceClient;
 
   DashboardRepositoryImpl(this._assetServiceClient, this._rfidServiceClient);

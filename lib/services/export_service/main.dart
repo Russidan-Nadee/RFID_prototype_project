@@ -1,6 +1,8 @@
+// lib/services/export_service/main.dart
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
+import 'package:rfid_project/shared/interfaces/asset_service_client_interface.dart';
 import 'api/controllers/export_controller.dart';
 import 'api/routes/export_routes.dart';
 import 'data/datasources/local/export_database.dart';
@@ -12,7 +14,8 @@ void main() async {
   // สร้าง dependencies
   final exportDatabase = ExportDatabase();
   await exportDatabase.init();
-  final assetServiceClient = AssetServiceClient();
+  final AssetServiceClientInterface assetServiceClient =
+      ExportAssetServiceClient();
 
   // สร้าง repository
   final ExportRepository exportRepository = ExportRepositoryImpl(

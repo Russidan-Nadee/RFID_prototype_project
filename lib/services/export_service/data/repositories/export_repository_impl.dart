@@ -1,3 +1,4 @@
+// services/export_service/data/repositories/export_repository_impl.dart
 import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
@@ -7,13 +8,12 @@ import 'package:path/path.dart' as path;
 import '../../domain/entities/export_record.dart';
 import '../../domain/repositories/export_repository.dart';
 import '../datasources/local/export_database.dart';
-import '../datasources/remote/asset_service_client.dart';
+import 'package:rfid_project/shared/interfaces/asset_service_client_interface.dart';
 import '../models/export_model.dart';
 
-/// การนำใช้งานจริงของคลัง Export
 class ExportRepositoryImpl implements ExportRepository {
   final ExportDatabase _exportDatabase;
-  final AssetServiceClient _assetServiceClient;
+  final AssetServiceClientInterface _assetServiceClient;
 
   ExportRepositoryImpl(this._exportDatabase, this._assetServiceClient);
 

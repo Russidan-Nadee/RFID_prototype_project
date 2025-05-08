@@ -1,16 +1,19 @@
-import 'package:rfid_project/services/export_service/data/datasources/remote/asset_service_client.dart';
+// lib/services/dashboard_service/main.dart
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
+import 'package:rfid_project/shared/interfaces/asset_service_client_interface.dart';
 import 'api/controllers/dashboard_controller.dart';
 import 'api/routes/dashboard_routes.dart';
+import 'data/datasources/remote/asset_service_client.dart';
 import 'data/datasources/remote/rfid_service_client.dart';
 import 'data/repositories/dashboard_repository_impl.dart';
 import 'domain/repositories/dashboard_repository.dart';
 
 void main() async {
   // สร้าง dependencies
-  final assetServiceClient = AssetServiceClient();
+  final AssetServiceClientInterface assetServiceClient =
+      DashboardAssetServiceClient();
   final rfidServiceClient = RfidServiceClient();
 
   // สร้าง repository

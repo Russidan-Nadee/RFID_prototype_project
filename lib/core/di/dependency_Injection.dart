@@ -1,19 +1,25 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rfid_project/services/dashboard_service/data/datasources/remote/asset_service_client.dart';
-import 'package:rfid_project/services/export_service/data/datasources/remote/asset_service_client.dart';
+import 'package:rfid_project/services/export_service/data/datasources/remote/asset_service_client.dart'
+    as export_asset_client;
 import 'package:rfid_project/shared/interfaces/asset_service_client_interface.dart';
 import '../../services/asset_service/data/datasources/local/asset_database.dart';
 import '../../services/asset_service/data/repositories/asset_repository_impl.dart';
 import '../../services/asset_service/domain/repositories/asset_repository.dart';
 import '../../services/dashboard_service/data/repositories/dashboard_repository_impl.dart';
+import '../../services/dashboard_service/domain/repositories/dashboard_repository.dart';
 import '../../services/dashboard_service/data/datasources/remote/rfid_service_client.dart';
 import '../../services/export_service/data/repositories/export_repository_impl.dart';
+import '../../services/export_service/domain/repositories/export_repository.dart';
 import '../../services/export_service/data/datasources/local/export_database.dart';
 import '../../services/rfid_service/data/repositories/rfid_repository_impl.dart';
+import '../../services/rfid_service/domain/repositories/rfid_repository.dart';
 import '../../services/rfid_service/data/datasources/local/rfid_device_interface.dart';
 import '../../services/rfid_service/data/datasources/remote/asset_service_client.dart'
     as rfid_asset_client;
+import 'package:rfid_project/services/export_service/data/datasources/remote/asset_service_client.dart'
+    as export_asset_service;
 
 class DependencyInjection {
   static final GetIt _locator = GetIt.instance;
@@ -38,7 +44,7 @@ class DependencyInjection {
     );
 
     _locator.registerLazySingleton<AssetServiceClientInterface>(
-      () => ExportAssetServiceClient(),
+      () => export_asset_service.ExportAssetServiceClient(),
       instanceName: 'export_asset_client',
     );
 
@@ -59,7 +65,7 @@ class DependencyInjection {
       () => AssetRepositoryImpl(_locator<AssetDatabase>()),
     );
 
-    _locator.registerLazySingleton<DashboardRepositoryImpl>(
+    _locator.registerLazySingleton<DashboardRepository>(
       () => DashboardRepositoryImpl(
         _locator.get<AssetServiceClientInterface>(
           instanceName: 'dashboard_asset_client',
@@ -68,7 +74,7 @@ class DependencyInjection {
       ),
     );
 
-    _locator.registerLazySingleton<ExportRepositoryImpl>(
+    _locator.registerLazySingleton<ExportRepository>(
       () => ExportRepositoryImpl(
         _locator<ExportDatabase>(),
         _locator.get<AssetServiceClientInterface>(
@@ -77,7 +83,7 @@ class DependencyInjection {
       ),
     );
 
-    _locator.registerLazySingleton<RfidRepositoryImpl>(
+    _locator.registerLazySingleton<RfidRepository>(
       () => RfidRepositoryImpl(
         _locator<MockRfidDeviceInterface>(),
         _locator<rfid_asset_client.AssetServiceClient>(),

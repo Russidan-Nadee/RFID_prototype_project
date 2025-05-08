@@ -1,11 +1,14 @@
-import 'package:dio/dio.dart';
-import '../../../../../../core/exceptions/error_handler.dart';
-import 'package:rfid_project/core/configuration/app_config.dart';
+// lib/services/export_service/data/datasources/remote/asset_service_client.dart
 
-class AssetServiceClient {
+import 'package:dio/dio.dart';
+import '../../../../../core/exceptions/error_handler.dart';
+import '../../../../../core/configuration/app_config.dart';
+import '../../../../../shared/interfaces/asset_service_client_interface.dart';
+
+class ExportAssetServiceClient implements AssetServiceClientInterface {
   final Dio _dio;
 
-  AssetServiceClient()
+  ExportAssetServiceClient()
     : _dio = Dio(
         BaseOptions(
           baseUrl: AppConfig.assetServiceUrl,
@@ -14,6 +17,7 @@ class AssetServiceClient {
         ),
       );
 
+  @override
   Future<List<Map<String, dynamic>>> getAssets() async {
     try {
       final response = await _dio.get('/assets');
@@ -31,6 +35,25 @@ class AssetServiceClient {
     }
   }
 
+  @override
+  Future<Map<String, dynamic>?> getAssetByUid(String uid) async {
+    try {
+      final response = await _dio.get('/assets/$uid');
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (data['success'] == true && data['data'] != null) {
+          return data['data'];
+        }
+      }
+
+      return null;
+    } catch (e) {
+      throw ErrorHandler.handleError(e);
+    }
+  }
+
+  @override
   Future<List<Map<String, dynamic>>> getFilteredAssets(
     List<String>? statuses,
   ) async {
